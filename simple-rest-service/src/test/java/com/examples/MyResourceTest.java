@@ -3,6 +3,7 @@ package com.examples;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 
@@ -43,7 +44,36 @@ public class MyResourceTest {
 	 */
 	@Test
 	public void testGetIt() {
-		String responseMsg = target.path("myresource").request().get(String.class);
+		String responseMsg = target
+			.path("myresource")
+			.request(MediaType.TEXT_PLAIN)
+			.get(String.class);
 		assertEquals("Got it!", responseMsg);
+	}
+
+	@Test
+	public void testGetItXML() {
+		String responseMsg = target
+			.path("myresource")
+			.request(MediaType.TEXT_XML)
+			.get(String.class);
+		assertEquals("<?xml version=\"1.0\"?>\n" + 
+				"<hello>Got it (XML)!</hello>\n" + 
+				"", responseMsg);
+	}
+
+	@Test
+	public void testGetItHTML() {
+		String responseMsg = target
+			.path("myresource")
+			.request(MediaType.TEXT_HTML)
+			.get(String.class);
+		assertEquals("<html>\n" + 
+				"<head>\n" + 
+				"<title>Hello Jersey</title>\n" + 
+				"</head>\n" + 
+				"<body>Got it (HTML)!</body>\n" + 
+				"</html>\n" + 
+				"", responseMsg);
 	}
 }
