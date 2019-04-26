@@ -102,7 +102,7 @@ public class EmployeeResourceRestAssuredTest {
 		when().
 			get(EMPLOYEES + "/foo").
 		then().
-			statusCode(204); // Status code: No Content
+			statusCode(404); // Status code: Not Found
 	}
 
 }
