@@ -102,7 +102,9 @@ public class EmployeeResourceRestAssuredTest {
 		when().
 			get(EMPLOYEES + "/foo").
 		then().
-			statusCode(404); // Status code: Not Found
+			statusCode(404). // Status code: Not Found
+			contentType(MediaType.TEXT_PLAIN).
+			body(equalTo("Employee not found with id foo"));
 	}
 
 }
