@@ -37,4 +37,11 @@ public class EmployeeResource {
 			.orElseThrow(() -> 
 				new NotFoundException("Employee not found with id " + id));
 	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Employee> getAllEmployeesJSON() {
+		return EmployeeRepository.instance.findAll();
+	}
+
 }
