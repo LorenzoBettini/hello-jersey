@@ -127,4 +127,34 @@ public class EmployeeResourceRestAssuredTest {
 				// other checks omitted
 			);
 	}
+
+	@Test
+	public void testGetOneEmployeeJSON() {
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(EMPLOYEES + "/ID2").
+		then().
+			statusCode(200).
+			assertThat().
+			body(
+				"id", equalTo("ID2"),
+				"name", equalTo("Second Employee"),
+				"salary", equalTo(2000)
+				// NOTE: "salary" retains its integer type in JSON
+				// so it must be equal to 2000 NOT "2000"
+			);
+	}
+
+	@Test
+	public void testGetOneEmployeeWithNonExistingIdJSON() {
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(EMPLOYEES + "/foo").
+		then().
+			statusCode(404). // Status code: Not Found
+			contentType(MediaType.TEXT_PLAIN).
+			body(equalTo("Employee not found with id foo"));
+	}
 }

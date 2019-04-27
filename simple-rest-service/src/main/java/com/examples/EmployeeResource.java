@@ -19,7 +19,7 @@ import com.examples.repository.EmployeeRepository;
 public class EmployeeResource {
 
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<Employee> getAllEmployees() {
 		return EmployeeRepository.instance.findAll();
 	}
@@ -30,18 +30,12 @@ public class EmployeeResource {
 	// Allows to type http://localhost:8080/myapp/employees/ID1
 	// ID1 will be treated as parameter "id" and passed to this method
 	@Path("{id}")
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Employee getOneEmployee(@PathParam("id") String id) {
 		return EmployeeRepository.instance
 			.findOne(id)
 			.orElseThrow(() -> 
 				new NotFoundException("Employee not found with id " + id));
-	}
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Employee> getAllEmployeesJSON() {
-		return EmployeeRepository.instance.findAll();
 	}
 
 }
