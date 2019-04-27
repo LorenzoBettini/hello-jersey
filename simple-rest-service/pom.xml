@@ -39,8 +39,11 @@
       <artifactId>jersey-hk2</artifactId>
     </dependency>
 
-    <!-- uncomment this to get JSON support: <dependency> <groupId>org.glassfish.jersey.media</groupId> 
-      <artifactId>jersey-media-json-binding</artifactId> </dependency> -->
+    <!-- JSON support: -->
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-binding</artifactId>
+    </dependency>
 
     <!-- JAXB has been removed from JDK 11 -->
     <dependency>
