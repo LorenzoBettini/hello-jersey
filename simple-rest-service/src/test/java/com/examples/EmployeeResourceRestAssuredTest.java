@@ -107,4 +107,24 @@ public class EmployeeResourceRestAssuredTest {
 			body(equalTo("Employee not found with id foo"));
 	}
 
+	@Test
+	public void testGetAllEmployeesJSON() {
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(EMPLOYEES).
+		then().
+			statusCode(200).
+			assertThat().
+			body(
+				"id[0]", equalTo("ID1"),
+				"name[0]", equalTo("First Employee"),
+				"salary[0]", equalTo(1000),
+				// NOTE: "salary" retains its integer type in JSON
+				// so it must be equal to 1000 NOT "1000"
+				"id[1]", equalTo("ID2"),
+				"name[1]", equalTo("Second Employee")
+				// other checks omitted
+			);
+	}
 }
