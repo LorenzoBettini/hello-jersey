@@ -2,6 +2,7 @@ package com.examples;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
@@ -18,10 +19,13 @@ import com.examples.repository.EmployeeRepository;
 @Path("employees")
 public class EmployeeResource {
 
+	@Inject
+	private EmployeeRepository employeeRepository;
+
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<Employee> getAllEmployees() {
-		return EmployeeRepository.instance.findAll();
+		return employeeRepository.findAll();
 	}
 
 	@GET
@@ -32,7 +36,7 @@ public class EmployeeResource {
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Employee getOneEmployee(@PathParam("id") String id) {
-		return EmployeeRepository.instance
+		return employeeRepository
 			.findOne(id)
 			.orElseThrow(() -> 
 				new NotFoundException("Employee not found with id " + id));
