@@ -1,11 +1,15 @@
 package com.examples;
 
+import java.io.IOException;
+import java.net.URI;
+
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import java.io.IOException;
-import java.net.URI;
+import com.examples.repository.EmployeeRepository;
+import com.examples.repository.InMemoryEmployeeRepository;
 
 /**
  * Main class.
@@ -24,7 +28,18 @@ public class Main {
 	public static HttpServer startServer() {
 		// create a resource config that scans for JAX-RS resources and providers
 		// in com.examples package
-		final ResourceConfig rc = new ResourceConfig().packages("com.examples");
+		final ResourceConfig rc = new ResourceConfig()
+			.packages("com.examples")
+			.register(new AbstractBinder() {
+				@Override
+				protected void configure() {
+					// differently from Guice,
+					// you bind a concrete type to an abstract type
+					// bind(concrete).to(abstract)
+					bind(InMemoryEmployeeRepository.class)
+						.to(EmployeeRepository.class);
+				}
+			});
 
 		// create and start a new instance of grizzly http server
 		// exposing the Jersey application at BASE_URI
