@@ -42,4 +42,13 @@ public class EmployeeResource {
 				new NotFoundException("Employee not found with id " + id));
 	}
 
+	// returns the number of employees
+	// Use http://localhost:8080/myapp/employees/count
+	// to get the total number of records
+	@GET
+	@Path("count")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getCount() {
+		return String.valueOf(employeeRepository.findAll().size());
+	}
 }
