@@ -5,6 +5,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.core.Application;
@@ -190,5 +191,19 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 			statusCode(404). // Status code: Not Found
 			contentType(MediaType.TEXT_PLAIN).
 			body(equalTo("Employee not found with id foo"));
+	}
+
+	@Test
+	public void testCount() {
+		List<Employee> employees = asList(new Employee(), new Employee());
+		when(employeeRepository.findAll())
+			.thenReturn(employees);
+
+		when().
+			get(EMPLOYEES + "/count").
+		then().
+			statusCode(200).
+			assertThat().
+			body(equalTo("" + employees.size()));
 	}
 }
