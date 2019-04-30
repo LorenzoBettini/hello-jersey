@@ -157,4 +157,18 @@ public class EmployeeResourceRestAssuredIT {
 			contentType(MediaType.TEXT_PLAIN).
 			body(equalTo("Employee not found with id foo"));
 	}
+
+	@Test
+	public void justForDemoCanAccessAlsoMyResource() {
+		given().
+			accept(MediaType.TEXT_PLAIN).
+		when().
+			get("myresource").
+		then().
+			statusCode(200).
+			assertThat().
+				contentType(MediaType.TEXT_PLAIN).
+				and().
+				body(equalTo("Got it!"));
+	}
 }

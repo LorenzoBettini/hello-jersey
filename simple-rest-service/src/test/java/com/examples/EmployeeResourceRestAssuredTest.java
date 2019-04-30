@@ -58,6 +58,16 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 	}
 
 	@Test
+	public void justForDemoCannotAccessAlsoMyResource() {
+		given().
+			accept(MediaType.TEXT_PLAIN).
+		when().
+			get("myresource").
+		then().
+			statusCode(404);
+	}
+
+	@Test
 	public void testGetAllEmployees() {
 		when(employeeRepository.findAll())
 			.thenReturn(asList(
