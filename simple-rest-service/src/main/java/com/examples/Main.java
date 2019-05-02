@@ -3,6 +3,8 @@ package com.examples;
 import java.io.IOException;
 import java.net.URI;
 
+import javax.inject.Singleton;
+
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -37,7 +39,9 @@ public class Main {
 					// you bind a concrete type to an abstract type
 					// bind(concrete).to(abstract)
 					bind(InMemoryEmployeeRepository.class)
-						.to(EmployeeRepository.class);
+						.to(EmployeeRepository.class)
+						.in(Singleton.class);
+						// all requests must be handled with the same repository
 				}
 			});
 
