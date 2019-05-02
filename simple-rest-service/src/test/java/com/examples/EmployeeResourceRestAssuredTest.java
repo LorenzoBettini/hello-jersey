@@ -237,6 +237,8 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 				"id", equalTo("ID"),
 				"name", equalTo("returned name"),
 				"salary", equalTo(2000)
-			);
+			).
+			header("Location",
+				response -> endsWith(EMPLOYEES + "/ID"));
 	}
 }
