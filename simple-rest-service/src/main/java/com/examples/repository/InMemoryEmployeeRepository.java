@@ -34,4 +34,11 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 				filter(e -> e.getEmployeeId().equals(id)).
 				findFirst();
 	}
+
+	public Employee save(Employee employee) {
+		// dumb way of generating an automatic ID
+		employee.setEmployeeId("ID" + (employees.size() + 1));
+		employees.add(employee);
+		return employee;
+	}
 }
