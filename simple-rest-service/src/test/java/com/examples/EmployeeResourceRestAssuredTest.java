@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
@@ -205,5 +207,36 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 			statusCode(200).
 			assertThat().
 			body(equalTo("" + employees.size()));
+	}
+
+	@Test
+	public void testPostNewEmployee() {
+		// values for the new Employee in the request body
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("name", "passed name")
+				.add("salary", 1000)
+				.build();
+
+		// when we pass an Employee with the values of the request body
+		when(employeeRepository.save(new Employee(null, "passed name", 1000)))
+			.thenReturn(new Employee("ID", "returned name", 2000));
+			// the repository returns a new Employee object
+			// possibly with different values
+			// but for sure with a generated id
+
+		given().
+			contentType(MediaType.APPLICATION_JSON).
+			body(newObject.toString()).
+		when().
+			post(EMPLOYEES).
+		then().
+			statusCode(201).
+			assertThat().
+			// make sure we return the Employee returned by the repository
+			body(
+				"id", equalTo("ID"),
+				"name", equalTo("returned name"),
+				"salary", equalTo(2000)
+			);
 	}
 }
