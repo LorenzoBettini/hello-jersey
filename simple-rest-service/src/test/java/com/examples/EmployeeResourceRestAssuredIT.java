@@ -2,7 +2,10 @@ package com.examples;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -11,7 +14,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 public class EmployeeResourceRestAssuredIT {
 
@@ -170,5 +175,38 @@ public class EmployeeResourceRestAssuredIT {
 				contentType(MediaType.TEXT_PLAIN).
 				and().
 				body(equalTo("Got it!"));
+	}
+
+	@Test
+	public void testPostNewEmployee() {
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("name", "test employee")
+				.add("salary", 1000)
+				.build();
+
+		Response response = given().
+				contentType(MediaType.APPLICATION_JSON).
+				body(newObject.toString()).
+			when().
+				post(EMPLOYEES);
+
+		String id = response.body().path("id");
+		String uri = response.header("Location");
+
+		assertThat(uri, endsWith(id));
+
+		// read the saved employee with the returned URI
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(uri).
+		then().
+			statusCode(200).
+			assertThat().
+			body(
+				"id", equalTo(id),
+				"name", equalTo("test employee"),
+				"salary", equalTo(1000)
+			);
 	}
 }
