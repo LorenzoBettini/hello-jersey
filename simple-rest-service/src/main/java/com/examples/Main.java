@@ -2,14 +2,18 @@ package com.examples;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.inject.Singleton;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.examples.model.Employee;
 import com.examples.repository.EmployeeRepository;
 import com.examples.repository.InMemoryEmployeeRepository;
 
@@ -42,6 +46,8 @@ public class Main {
 						.to(EmployeeRepository.class)
 						.in(Singleton.class);
 						// all requests must be handled with the same repository
+					bindAsContract(new TypeLiteral<LinkedHashMap<String, Employee>>() {})
+						.to(new TypeLiteral<Map<String, Employee>>() {});
 				}
 			});
 
