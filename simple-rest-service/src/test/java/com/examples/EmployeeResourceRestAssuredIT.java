@@ -252,4 +252,42 @@ public class EmployeeResourceRestAssuredIT {
 		// if there are duplicated ids then we had a race condition
 		assertThat(ids).doesNotHaveDuplicates();
 	}
+
+	@Test
+	public void testPutReplaceEmployee() {
+		// we want to replace Employee("ID1", "First Employee", 1000)
+		// with new Employee("ID1", "modified employee", 2000)
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("name", "modified employee")
+				.add("salary", 2000)
+				.build();
+
+		given().
+			contentType(MediaType.APPLICATION_JSON).
+			body(newObject.toString()).
+		when().
+			put(EMPLOYEES + "/ID1").
+		then().
+			statusCode(200).
+			assertThat().
+			body(
+				"id", equalTo("ID1"),
+				"name", equalTo("modified employee"),
+				"salary", equalTo(2000)
+			);
+
+		// read the replaced employee
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(EMPLOYEES + "/ID1").
+		then().
+			statusCode(200).
+			assertThat().
+			body(
+				"id", equalTo("ID1"),
+				"name", equalTo("modified employee"),
+				"salary", equalTo(2000)
+			);
+	}
 }
