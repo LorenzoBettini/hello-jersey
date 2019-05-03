@@ -9,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -64,8 +65,9 @@ public class EmployeeResource {
 	 * operation always succeeds.
 	 * 
 	 * @param employee
+	 * @param uriInfo
 	 * @return
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -77,5 +79,21 @@ public class EmployeeResource {
 				uriInfo.getAbsolutePath() + "/" + saved.getEmployeeId()))
 			.entity(saved)
 			.build();
+	}
+
+	/**
+	 * Replaces an existing Employee given its id, with the values of the passed
+	 * Employee. For simplicity, we assume that the operation always succeeds.
+	 * 
+	 * @param id
+	 * @param employee
+	 * @return
+	 */
+	@PUT
+	@Path("{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employee replaceEmployee(@PathParam("id") String id, Employee employee) {
+		return employeeRepository.save(employee);
 	}
 }
