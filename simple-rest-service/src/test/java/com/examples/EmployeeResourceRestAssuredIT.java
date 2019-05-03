@@ -1,8 +1,17 @@
 package com.examples;
 
 import static io.restassured.RestAssured.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -13,7 +22,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -114,7 +122,7 @@ public class EmployeeResourceRestAssuredIT {
 
 	@Test
 	public void testGetAllEmployeesJSON() {
-		given().
+		Response response = given().
 			accept(MediaType.APPLICATION_JSON).
 		when().
 			get(EMPLOYEES).
@@ -130,7 +138,10 @@ public class EmployeeResourceRestAssuredIT {
 				"id[1]", equalTo("ID2"),
 				"name[1]", equalTo("Second Employee")
 				// other checks omitted
-			);
+			).extract().response();
+		
+		List<Object> res = response.jsonPath().getList("id");
+		System.out.println(res);
 	}
 
 	@Test
@@ -208,5 +219,37 @@ public class EmployeeResourceRestAssuredIT {
 				"name", equalTo("test employee"),
 				"salary", equalTo(1000)
 			);
+	}
+
+	@Test
+	public void testPostNewEmployeeConcurrent() {
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("name", "test employee")
+				.add("salary", 1000)
+				.build();
+
+		Collection<String> ids = new ConcurrentLinkedQueue<>();
+
+		List<Thread> threads = IntStream.range(0, 10)
+			.mapToObj(i -> new Thread(() ->
+				{ 
+					Response response = 
+						given().
+							contentType(MediaType.APPLICATION_JSON).
+							body(newObject.toString()).
+						when().
+							post(EMPLOYEES);
+					ids.add(response.path("id"));
+				}
+			))
+			.peek(t -> t.start())
+			.collect(Collectors.toList());
+
+		// wait for all the threads to finish
+		await().atMost(10, SECONDS)
+			.until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+
+		// if there are duplicated ids then we had a race condition
+		assertThat(ids).doesNotHaveDuplicates();
 	}
 }
