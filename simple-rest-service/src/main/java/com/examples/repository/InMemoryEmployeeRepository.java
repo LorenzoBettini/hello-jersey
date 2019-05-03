@@ -1,8 +1,11 @@
 package com.examples.repository;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 import com.examples.model.Employee;
 
@@ -13,32 +16,51 @@ import com.examples.model.Employee;
  */
 public class InMemoryEmployeeRepository implements EmployeeRepository {
 
-	private List<Employee> employees = new LinkedList<>();
+	private Map<String, Employee> employees;
 
-	public InMemoryEmployeeRepository() {
+	@Inject
+	public InMemoryEmployeeRepository(Map<String, Employee> employees) {
+		this.employees = employees;
 		// initialize the "db" with some contents
-		employees.add(new Employee("ID1", "First Employee", 1000));
-		employees.add(new Employee("ID2", "Second Employee", 2000));
-		employees.add(new Employee("ID3", "Third Employee", 3000));
+		put(new Employee("ID1", "First Employee", 1000));
+		put(new Employee("ID2", "Second Employee", 2000));
+		put(new Employee("ID3", "Third Employee", 3000));
+	}
+
+	/**
+	 * Assumes that {@link Employee#getEmployeeId()} does not return null.
+	 * 
+	 * @param employee
+	 *            {@link Employee#getEmployeeId()} must not return null.
+	 */
+	private void put(Employee employee) {
+		employees.put(employee.getEmployeeId(), employee);
 	}
 
 	@Override
 	public synchronized List<Employee> findAll() {
-		return employees;
+		return new ArrayList<>(employees.values());
 	}
 
 	@Override
 	public synchronized Optional<Employee> findOne(String id) {
-		return employees.
-				stream().
-				filter(e -> e.getEmployeeId().equals(id)).
-				findFirst();
+		return Optional.ofNullable(employees.get(id));
 	}
 
+	/**
+	 * If the passed employee has no id, then it is generated automatically.
+	 * 
+	 * @param employee
+	 * @return the saved employee
+	 */
 	public synchronized Employee save(Employee employee) {
-		// dumb way of generating an automatic ID
-		employee.setEmployeeId("ID" + (employees.size() + 1));
-		employees.add(employee);
+		if (employee.getEmployeeId() == null) {
+			// dumb way of generating an automatic ID
+			employee.setEmployeeId("ID" + (employees.size() + 1));
+		}
+		// Map.put adds a new element or replace an existing one
+		// with the given key
+		put(employee);
 		return employee;
 	}
 }
