@@ -23,19 +23,19 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 	}
 
 	@Override
-	public List<Employee> findAll() {
+	public synchronized List<Employee> findAll() {
 		return employees;
 	}
 
 	@Override
-	public Optional<Employee> findOne(String id) {
+	public synchronized Optional<Employee> findOne(String id) {
 		return employees.
 				stream().
 				filter(e -> e.getEmployeeId().equals(id)).
 				findFirst();
 	}
 
-	public Employee save(Employee employee) {
+	public synchronized Employee save(Employee employee) {
 		// dumb way of generating an automatic ID
 		employee.setEmployeeId("ID" + (employees.size() + 1));
 		employees.add(employee);
