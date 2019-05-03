@@ -241,4 +241,36 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 			header("Location",
 				response -> endsWith(EMPLOYEES + "/ID"));
 	}
+
+	@Test
+	public void testPutEmployee() {
+		// values for the new Employee in the request body
+		// the id is not present
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("name", "passed name")
+				.add("salary", 1000)
+				.build();
+
+		// when we pass an Employee with the values of the request body
+		// where we must have set the employee id of the URI
+		when(employeeRepository.save(new Employee("ID", "passed name", 1000)))
+			.thenReturn(new Employee("ID", "returned name", 2000));
+			// the repository returns a new Employee object
+			// possibly with different values
+
+		given().
+			contentType(MediaType.APPLICATION_JSON).
+			body(newObject.toString()).
+		when().
+			put(EMPLOYEES + "/ID").
+		then().
+			statusCode(200).
+			assertThat().
+			// make sure we return the Employee returned by the repository
+			body(
+				"id", equalTo("ID"),
+				"name", equalTo("returned name"),
+				"salary", equalTo(2000)
+			);
+	}
 }
