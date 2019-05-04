@@ -7,7 +7,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -19,7 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.examples.model.Employee;
-import com.examples.repository.EmployeeRepository;
+import com.examples.service.EmployeeService;
 
 /**
  * Root resource (exposed at "employees" path)
@@ -28,12 +27,12 @@ import com.examples.repository.EmployeeRepository;
 public class EmployeeResource {
 
 	@Inject
-	private EmployeeRepository employeeRepository;
+	private EmployeeService employeeService;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<Employee> getAllEmployees() {
-		return employeeRepository.findAll();
+		return employeeService.allEmployees();
 	}
 
 	@GET
@@ -44,10 +43,7 @@ public class EmployeeResource {
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Employee getOneEmployee(@PathParam("id") String id) {
-		return employeeRepository
-			.findOne(id)
-			.orElseThrow(() -> 
-				new NotFoundException("Employee not found with id " + id));
+		return employeeService.getEmployeeById(id);
 	}
 
 	// returns the number of employees
@@ -57,12 +53,11 @@ public class EmployeeResource {
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getCount() {
-		return String.valueOf(employeeRepository.findAll().size());
+		return String.valueOf(employeeService.allEmployees().size());
 	}
 
 	/**
-	 * Add a new Employee to the database. For simplicity, we assume that the
-	 * operation always succeeds.
+	 * Add a new Employee to the database.
 	 * 
 	 * @param employee
 	 * @param uriInfo
@@ -73,7 +68,7 @@ public class EmployeeResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addEmployee(Employee employee, @Context UriInfo uriInfo) throws URISyntaxException {
-		Employee saved = employeeRepository.save(employee);
+		Employee saved = employeeService.addEmployee(employee);
 		return Response
 			.created(new URI(
 				uriInfo.getAbsolutePath() + "/" + saved.getEmployeeId()))
@@ -83,7 +78,7 @@ public class EmployeeResource {
 
 	/**
 	 * Replaces an existing Employee given its id, with the values of the passed
-	 * Employee. For simplicity, we assume that the operation always succeeds.
+	 * Employee.
 	 * 
 	 * @param id
 	 * @param employee
@@ -94,7 +89,6 @@ public class EmployeeResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Employee replaceEmployee(@PathParam("id") String id, Employee employee) {
-		employee.setEmployeeId(id);
-		return employeeRepository.save(employee);
+		return employeeService.replaceEmployeeById(id, employee);
 	}
 }
