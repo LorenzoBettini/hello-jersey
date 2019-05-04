@@ -16,6 +16,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import com.examples.model.Employee;
 import com.examples.repository.EmployeeRepository;
 import com.examples.repository.InMemoryEmployeeRepository;
+import com.examples.service.EmployeeService;
+import com.examples.service.EmployeeServiceImpl;
 
 /**
  * Main class.
@@ -42,6 +44,8 @@ public class Main {
 					// differently from Guice,
 					// you bind a concrete type to an abstract type
 					// bind(concrete).to(abstract)
+					bind(EmployeeServiceImpl.class)
+						.to(EmployeeService.class);
 					bind(InMemoryEmployeeRepository.class)
 						.to(EmployeeRepository.class)
 						.in(Singleton.class);
