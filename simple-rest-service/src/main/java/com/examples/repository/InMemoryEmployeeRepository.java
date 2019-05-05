@@ -63,4 +63,9 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 		put(employee);
 		return employee;
 	}
+
+	@Override
+	public Employee deleteById(String id) {
+		return employees.remove(id);
+	}
 }

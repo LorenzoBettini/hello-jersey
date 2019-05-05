@@ -70,4 +70,14 @@ public class InMemoryEmployeeRepositoryTest {
 			.isNotSameAs(original);
 	}
 
+	@Test
+	public void testDeleteById() {
+		String id = "ID1";
+		Employee employee = new Employee(id, "Test Employee", 0);
+		map.put(employee.getEmployeeId(), employee);
+		assertThat(repository.deleteById(id))
+			.isSameAs(employee);
+		assertThat(repository.deleteById("non-existent"))
+			.isNull();
+	}
 }
