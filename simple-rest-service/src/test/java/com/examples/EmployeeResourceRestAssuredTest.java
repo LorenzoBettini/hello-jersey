@@ -93,6 +93,35 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 			);
 	}
 
+	@Test
+	public void testGetAllEmployeesWithRootPaths() {
+		when(employeeService.allEmployees())
+			.thenReturn(asList(
+				new Employee("ID1", "First Employee", 1000),
+				new Employee("ID2", "Second Employee", 2000)
+			));
+
+		// a variation of the above test showing how to
+		// test several XML elements
+		given().
+			accept(MediaType.APPLICATION_XML).
+		when().
+			get(EMPLOYEES).
+		then().
+			statusCode(200).
+			assertThat().
+				root("employees.employee[0]").
+				body(
+					"id", equalTo("ID1"),
+					"name", equalTo("First Employee"),
+					"salary", equalTo("1000")
+				).
+				root("employees.employee[1]").
+				body(
+					"id", equalTo("ID2")
+					// similar assertions for the other fields
+				);
+	}
 
 	@Test
 	public void testGetOneEmployee() {
