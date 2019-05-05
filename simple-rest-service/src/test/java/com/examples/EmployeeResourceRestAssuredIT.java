@@ -290,4 +290,26 @@ public class EmployeeResourceRestAssuredIT {
 				"salary", equalTo(2000)
 			);
 	}
+
+	@Test
+	public void testPutBadRequestWhenIdIsPartOfTheBody() {
+		// we want to replace Employee("ID1", "First Employee", 1000)
+		// but the id should not be part of the body
+		JsonObject newObject = Json.createObjectBuilder()
+				.add("id", "ID1")
+				.add("name", "modified employee")
+				.add("salary", 2000)
+				.build();
+
+		given().
+			contentType(MediaType.APPLICATION_JSON).
+			body(newObject.toString()).
+		when().
+			put(EMPLOYEES + "/ID1").
+		then().
+			statusCode(400). // Bad Request
+			assertThat().
+			contentType(MediaType.TEXT_PLAIN).
+			body(equalTo("Unexpected id specification for Employee"));
+	}
 }
