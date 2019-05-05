@@ -141,4 +141,13 @@ public class EmployeeServiceImplTest {
 		verifyNoMoreInteractions(ignoreStubs(employeeRepository));
 	}
 
+	@Test
+	public void testDeleteEmployeeByIdJustDelegatesToRepository() {
+		Employee employee = new Employee();
+		when(employeeRepository.deleteById("an-id"))
+			.thenReturn(employee);
+		assertThat(employeeService.deleteEmployeeById("an-id"))
+			.isSameAs(employee);
+	}
+
 }
