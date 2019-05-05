@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -269,5 +270,31 @@ public class EmployeeResourceRestAssuredTest extends JerseyTest {
 				"name", equalTo("returned name"),
 				"salary", equalTo(2000)
 			);
+	}
+
+	@Test
+	public void testDeleteEmployee() {
+		when(employeeService.deleteEmployeeById("ID"))
+			.thenReturn(new Employee("ID", "employee", 1000))
+			.thenReturn(null);
+
+		when().
+			delete(EMPLOYEES + "/ID").
+		then().
+			statusCode(202).
+			assertThat().
+			body(
+				"id", equalTo("ID"),
+				"name", equalTo("employee"),
+				"salary", equalTo(1000)
+			);
+
+		// idempotence
+		when().
+			delete(EMPLOYEES + "/ID").
+		then().
+			statusCode(202).
+			assertThat().
+			body(Matchers.isEmptyString());
 	}
 }

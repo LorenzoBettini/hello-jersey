@@ -208,4 +208,21 @@ public class EmployeeResourceRestAssuredIT {
 			contentType(MediaType.TEXT_PLAIN).
 			body(equalTo("Unexpected id specification for Employee"));
 	}
+
+	@Test
+	public void testDelete() {
+		when().
+			delete(EMPLOYEES + "/ID1").
+		then().
+			statusCode(202).
+			assertThat().
+			body("name", equalTo("First Employee"));
+
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(EMPLOYEES + "/ID1").
+		then().
+			statusCode(404);
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -90,5 +91,20 @@ public class EmployeeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Employee replaceEmployee(@PathParam("id") String id, Employee employee) {
 		return employeeService.replaceEmployeeById(id, employee);
+	}
+
+	/**
+	 * Deletes the Employee with the given id.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@DELETE
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteEmployee(@PathParam("id") String id) {
+		return Response
+			.accepted(employeeService.deleteEmployeeById(id))
+			.build();
 	}
 }
