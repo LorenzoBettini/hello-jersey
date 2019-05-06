@@ -45,11 +45,11 @@ public class Main {
 					// you bind a concrete type to an abstract type
 					// bind(concrete).to(abstract)
 					bind(EmployeeServiceImpl.class)
-						.to(EmployeeService.class);
-					bind(InMemoryEmployeeRepository.class)
-						.to(EmployeeRepository.class)
+						.to(EmployeeService.class)
 						.in(Singleton.class);
 						// all requests must be handled with the same repository
+					bind(InMemoryEmployeeRepository.class)
+						.to(EmployeeRepository.class);
 					bindAsContract(new TypeLiteral<LinkedHashMap<String, Employee>>() {})
 						.to(new TypeLiteral<Map<String, Employee>>() {});
 				}
