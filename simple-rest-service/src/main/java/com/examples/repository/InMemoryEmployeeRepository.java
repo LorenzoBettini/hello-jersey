@@ -38,12 +38,12 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 	}
 
 	@Override
-	public synchronized List<Employee> findAll() {
+	public List<Employee> findAll() {
 		return new ArrayList<>(employees.values());
 	}
 
 	@Override
-	public synchronized Optional<Employee> findOne(String id) {
+	public Optional<Employee> findOne(String id) {
 		return Optional.ofNullable(employees.get(id));
 	}
 
@@ -53,7 +53,7 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 	 * @param employee
 	 * @return the saved employee
 	 */
-	public synchronized Employee save(Employee employee) {
+	public Employee save(Employee employee) {
 		if (employee.getEmployeeId() == null) {
 			// dumb way of generating an automatic ID
 			employee.setEmployeeId("ID" + (employees.size() + 1));

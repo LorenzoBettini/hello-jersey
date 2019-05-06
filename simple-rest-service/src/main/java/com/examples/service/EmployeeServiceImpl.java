@@ -19,12 +19,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> allEmployees() {
+	public synchronized List<Employee> allEmployees() {
 		return employeeRepository.findAll();
 	}
 
 	@Override
-	public Employee getEmployeeById(String id) {
+	public synchronized Employee getEmployeeById(String id) {
 		return employeeRepository
 			.findOne(id)
 			.orElseThrow(
@@ -32,13 +32,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee addEmployee(Employee employee) {
+	public synchronized Employee addEmployee(Employee employee) {
 		sanityChecks(employee);
 		return employeeRepository.save(employee);
 	}
 
 	@Override
-	public Employee replaceEmployeeById(String id, Employee employee) {
+	public synchronized Employee replaceEmployeeById(String id, Employee employee) {
 		sanityChecks(employee);
 		if (!employeeRepository.findOne(id).isPresent())
 			throw new NotFoundException("Employee not found with id " + id);
@@ -56,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee deleteEmployeeById(String id) {
+	public synchronized Employee deleteEmployeeById(String id) {
 		return employeeRepository.deleteById(id);
 	}
 
