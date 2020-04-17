@@ -145,6 +145,77 @@
               <goal>verify</goal>
             </goals>
           </execution>
+          <execution>
+            <id>e2e-test</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <server.port>${server.random.port}</server.port>
+              </systemPropertyVariables>
+              <excludes>
+                <exclude>**/*IT.java</exclude>
+              </excludes>
+              <includes>
+                <include>**/*E2E.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.27.2</version>
+        <configuration>
+          <showLogs>true</showLogs>
+          <images>
+            <image>
+              <name>simple-rest-service</name>
+              <build>
+                <dockerFileDir>${project.basedir}</dockerFileDir>
+              </build>
+              <run>
+                <ports>
+                  <!-- When the start task executes, a port will be dynamically 
+                    selected by Docker and assigned to the property server.random.port -->
+                  <port>server.random.port:8080</port>
+                </ports>
+                <wait>
+                  <http>
+                    <url>http://localhost:${server.random.port}/myapp/employees</url>
+                    <method>GET</method>
+                    <status>200</status>
+                  </http>
+                </wait>
+              </run>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>docker:build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>docker-start</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>docker-stop</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
     </plugins>
