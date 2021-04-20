@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:11
 
 COPY /target/*.jar /app/app.jar
 COPY /target/dependency /app/dependency
